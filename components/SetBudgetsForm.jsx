@@ -3,39 +3,30 @@
 import { useState } from "react";
 import {
   Paper,
+  Typography,
   TextField,
   MenuItem,
   Button,
-  Typography,
   Box,
   useTheme,
 } from "@mui/material";
 
-export default function TransactionForm({ onSuccess }) {
+export default function SetBudgetsForm({ onSuccess }) {
+  const [month, setMonth] = useState(new Date().toISOString().slice(0, 7));
+  const [category, setCategory] = useState("Food");
   const [amount, setAmount] = useState("");
-  const [date, setDate] = useState("");
-  const [description, setDescription] = useState("");
-  const [category, setCategory] = useState("Other");
   const theme = useTheme();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!amount || !date || !description)
-      return alert("All fields required");
-
-    const res = await fetch("/api/transactions", {
+    await fetch("/api/budgets", {
       method: "POST",
-      body: JSON.stringify({ amount, date, description, category }),
       headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ month, category, amount: Number(amount) }),
     });
 
-    if (res.ok) {
-      setAmount("");
-      setDate("");
-      setDescription("");
-      setCategory("Other");
-      onSuccess();
-    }
+    setAmount("");
+    onSuccess?.();
   };
 
   return (
@@ -49,13 +40,8 @@ export default function TransactionForm({ onSuccess }) {
         boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
       }}
     >
-      <Typography
-        variant="h6"
-        fontWeight="bold"
-        color="primary"
-        gutterBottom
-      >
-        ➕ Add Transaction
+      <Typography variant="h6" fontWeight="bold" color="primary" gutterBottom>
+        📅 Set Budget
       </Typography>
 
       <Box
@@ -64,34 +50,18 @@ export default function TransactionForm({ onSuccess }) {
         sx={{ display: "flex", flexDirection: "column", gap: 2 }}
       >
         <TextField
-          type="number"
-          label="Amount"
+          type="month"
+          value={month}
+          onChange={(e) => setMonth(e.target.value)}
           fullWidth
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-        />
-
-        <TextField
-          type="date"
-          fullWidth
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
-          InputLabelProps={{ shrink: true }}
-        />
-
-        <TextField
-          label="Description"
-          fullWidth
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
         />
 
         <TextField
           select
           label="Category"
-          fullWidth
           value={category}
           onChange={(e) => setCategory(e.target.value)}
+          fullWidth
         >
           <MenuItem value="Food">Food</MenuItem>
           <MenuItem value="Transport">Transport</MenuItem>
@@ -100,13 +70,21 @@ export default function TransactionForm({ onSuccess }) {
           <MenuItem value="Other">Other</MenuItem>
         </TextField>
 
+        <TextField
+          type="number"
+          label="Amount (₹)"
+          value={amount}
+          onChange={(e) => setAmount(e.target.value)}
+          fullWidth
+        />
+
         <Button
           type="submit"
           variant="contained"
-          color="secondary"
+          color="primary"
           sx={{ mt: 1, py: 1.2 }}
         >
-          Add Transaction
+          Save Budget
         </Button>
       </Box>
     </Paper>
