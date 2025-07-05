@@ -1,3 +1,4 @@
+// models/Transaction.js
 import mongoose from "mongoose";
 
 const TransactionSchema = new mongoose.Schema({
@@ -5,13 +6,18 @@ const TransactionSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  date: {
+    type: Date,
+    required: true,
+  },
   description: {
     type: String,
     required: true,
   },
-  date: {
-    type: Date,
-    required: true,
+  category: {
+    type: String,
+    enum: ['Food', 'Transport', 'Shopping', 'Bills', 'Other'],
+    default: 'Other',
   },
 });
 

@@ -7,19 +7,32 @@ export default function TransactionList({ refresh }) {
   useEffect(() => {
     fetch("/api/transactions")
       .then((res) => res.json())
-      .then((data) => setTransactions(data));
+      .then(setTransactions);
   }, [refresh]);
 
   return (
-    <div className="mt-4">
-      <h2 className="text-lg font-semibold mb-2">Transactions</h2>
-      <ul className="space-y-2">
-        {transactions.map((tx) => (
-          <li key={tx._id} className="border p-2 rounded-md">
-            <strong>₹{tx.amount}</strong> - {tx.description} on {new Date(tx.date).toLocaleDateString()}
-          </li>
-        ))}
-      </ul>
+    <div>
+      <h2 className="text-xl font-semibold mb-2">📋 Transactions</h2>
+      <table className="w-full border">
+        <thead>
+          <tr className="bg-gray-100">
+            <th className="p-2">Date</th>
+            <th>Description</th>
+            <th>Amount</th>
+            <th>Category</th>
+          </tr>
+        </thead>
+        <tbody>
+          {transactions.map((t) => (
+            <tr key={t._id} className="border-t text-center">
+              <td className="p-2">{new Date(t.date).toLocaleDateString()}</td>
+              <td>{t.description}</td>
+              <td>₹{t.amount}</td>
+              <td>{t.category}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }
